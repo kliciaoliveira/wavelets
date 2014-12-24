@@ -1,5 +1,7 @@
-// Reescrita do programa ondaletas bidimensional em Cplusplus
-// com o modelo acamadado
+/* Reescrita do programa ondaletas bidimensional em Cplusplus
+ com o modelo acamadado
+*/
+
 
 #include <iostream>
 #include <cmath>
@@ -9,7 +11,10 @@
 #include <string>
 using namespace std;
 
-//Funcoes
+/*
+	Funcao cálculo da Integral
+*/
+
 double integral( double inicialx, double finalx, double inicialy, double finaly, vector<vector<double> > matrix )
 {
 //double integral( double inicialx, double finalx, double inicialy, double finaly)
@@ -44,6 +49,9 @@ double integral( double inicialx, double finalx, double inicialy, double finaly,
     return(res);
 }
 
+/* 
+	Início do programa
+*/
 
 //Programa
 int main (int argc, char **argv)
@@ -64,8 +72,8 @@ int main (int argc, char **argv)
     const double dom_inf_y = 0 ;
     const double dom_sup_x = 20 ;
     const double dom_sup_y = 80 ;
-    const double increment = 2 ; //Incremento da representacao
-    const double l = 8 ;           // Determinacao de l - passo da varredura
+    const double increment = 5 ; //Incremento da representacao
+    const double l = 2 ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
 //    int elementos_somaFxy = (ceil((abs(inicio_x)+abs(fim_x))/increment)*ceil((abs(inicio_y)+abs(fim_y))/increment));
@@ -142,7 +150,7 @@ int main (int argc, char **argv)
 //    int i = 0;
     for(double x = inicio_x ; x <= fim_x ; x += increment){	//--Valores de x e y para tomar da matriz
         for(double y = inicio_y ; y <= fim_y ; y += increment){
-            somaFxy = 0;
+			somaFxy = 0;
             for( int k1 = min_k1; k1 <= max_k1; k1++ ) {
                 for( int k2 = min_k2; k2 <= max_k2; k2++ ) {
                     double a = pow(2,-l)* k1 ;      		//--Gerando a matriz
@@ -158,7 +166,7 @@ int main (int argc, char **argv)
 //                    int indice_k1 = k1_m - floor(inicio_x / pow(2,-l));
 //                    int indice_k2 = k2_m - floor(inicio_y / pow(2,-l));
 //                    cout << cjk << endl;
-//                    cout << a << " " << b << " " << c << " " << d << endl;
+					cout << min_k1 << " " << min_k2 << " " << max_k1 << " " << max_k2 << endl;
                     double coefcjk_matrix = cjk * phi * phi ;
                     if ( (x >= a && x <=  b) && (y >= c && y <= d)) {
                         Fxy = coefcjk_matrix * phi *phi;
