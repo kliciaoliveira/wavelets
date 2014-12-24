@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/nwwavelets.dir/main.o  -o nwwavelets -rdynamic 

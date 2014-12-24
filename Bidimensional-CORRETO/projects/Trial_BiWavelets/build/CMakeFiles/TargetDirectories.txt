@@ -1,0 +1,1 @@
+/home/klicia/projects/Trial_BiWavelets/build/CMakeFiles/trial_biwavelets.dir

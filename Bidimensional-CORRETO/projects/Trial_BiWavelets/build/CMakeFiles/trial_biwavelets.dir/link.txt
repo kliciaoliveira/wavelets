@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/trial_biwavelets.dir/main.o  -o trial_biwavelets -rdynamic 

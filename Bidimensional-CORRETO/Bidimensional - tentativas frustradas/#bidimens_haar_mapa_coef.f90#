@@ -1,0 +1,467 @@
+! ============================================================================
+!         REPRESENTACAO DE FUNCAO BIDIMENSIONAL UTILIZANDO ONDALETAS
+! ============================================================================
+!            Autor          |   Versao-Data  |   Detalhes     
+!         K.Oliveira          0.1-04/02/2012   
+!         K.Oliveira          0.2-23/03/2012   Plotagem incorreta. Correcoes.
+!         K.Oliveira          0.3-17/04/2012   Testes nas integrais desde o dia 23.
+!         K.Oliveira          0.4-06/05/2012
+!         K.Oliveira          0.5-23/06/2012
+!         K.Oliveira          0.7-10/07/2012   Duvida Integral
+
+!
+! =========================================================================
+!                          SOBRE O PROGRAMA
+! =========================================================================
+! Busca-se representar a funcao 
+!                    x*x+x+y+1 no intervalo x=[0,2] e y=[0,2] 
+! graficamente utilizando o gnuplot para plotagem e a teoria de ondaletas bidimensionais.
+!
+!
+program wavelet
+  implicit none
+  real j,k1,k2,l,x,y, min_Interv, max_Interv, somaPai, somaMae, fcPai, fcMae, Fxy
+  integer sinal
+  OPEN(UNIT=3, FILE='wavebi.dat', STATUS='UNKNOWN')
+
+  x=-1.                       ! Do's de varredura x-y
+  do while (x .le. 3.0)
+     y=-1.
+     do while (y .le. 3.0)
+        min_Interv=-10.                        ! *** Variacao de j ****
+        max_Interv=10.
+        if ((x .ge. 0. .and. x .le. 2.0) .and. (y .ge. 0. .and. y .le. 2.0)) then     ! intervalo [0,2] para X e Y
+           Fxy=0.
+           somaPai=0. ; fcPai=0.
+           l=min_Interv
+           j=0.
+           k1=-6.                             ! *** Variacao de k ***
+           do while (k1 .le. 6)
+              k2=-6.
+              do while (k2 .le. 6.)
+                 call calculo_pai(x,y,l,k1,k2, fcPai)
+                 somaPai=somaPai+fcPai
+                 k2=k2+1.
+              enddo
+              k1=k1+1.
+           enddo
+           somaMae=0. ; fcMae=0.
+           j=l
+           do while (j .le. max_interv)
+!              write(*,*)j
+              k1=-6.                         ! *** Variacao de k ***
+              do while (k1 .le. 6.)
+                 k2=-6.
+                 do while (k2 .le. 6.)
+                    do sinal=1,3  ! |||| Sinal de ondaleta mae horizontal (1), vertical (2) e diagonal (3) ||||
+                       call calculo_mae(sinal,x,y,j,k1,k2, fcMae) !Psi
+                       somaMae=somaMae+fcMae
+                    enddo
+                    k2=k2+1.
+                 enddo
+                 k1=k1+1.
+              enddo
+              j=j+1.
+           enddo
+           Fxy=somaPai+somaMae
+!           write(*,*)x,y,Fxy
+           write(3,*)x,y,Fxy           
+100        format(f20.20, f20.20, f20.20)
+        else
+           Fxy=0.
+!           write(*,*)x,y,Fxy
+           write(3,*)x,y,Fxy
+        endif
+        y=y+0.01
+     enddo
+     x=x+0.01
+  enddo
+end program wavelet
+!
+!**************************************************************************************
+!                                    SUBROTINAS
+!**************************************************************************************
+!
+!   =========================== CALCULO DA INTEGRAL DUPLA =======================
+!
+subroutine integral(inicialx,inicialy,finalx,finaly, res)
+real inicialx,inicialy,finalx,finaly,res,parcial1,parcial2
+  res=0. ;parcial1=0. ;parcial2=0.
+
+  parcial1 = ((finalx-inicialx)/2)*(finaly**2)  + &
+       (((finalx**3)/3) - ((inicialx**3)/3) + ((finalx**2)/2) - ((inicialx**2)/2) + finalx - inicialx)*finaly
+  parcial2 = ((finalx-inicialx)/2)*(inicialy**2)  + (((finalx**3)/3) - ((inicialx**3)/3) + &
+       ((finalx**2)/2) - ((inicialx**2)/2) + finalx - inicialx)*inicialy
+
+  res=parcial1-parcial2
+return
+end subroutine integral
+!
+! ============================= SUBROTINAS PAI (PHI) =============================  ! Checadas OK
+!
+subroutine calculo_pai(x,y,l,k1,k2, fcPai)             ! RETORNA O SOMATORIO 
+  real j,k1,k2, fcPai, x, y, l
+  call calculo_phiMai(x,y,l,k1,k2, phi)
+  if (phi .ne. 0) then
+     call calculo_integral_clk(l,k1,k2, cjk)           !cjk OK
+     cjk=cjk*phi
+     fcPai=cjk*phi
+   else
+     fcPai=0.
+  endif
+  return
+end subroutine calculo_pai
+
+subroutine calculo_phiMai(x,y,l,k1,k2, phi_lk)
+  real x,y,l,k1,k2, phi_lk, phiX,phiY
+  call calculo_phi(x,l,k1,phiX)
+  call calculo_phi(y,l,k2,phiY)
+  phi_lk=phiX*phiY
+  return
+end subroutine calculo_phiMai
+
+subroutine calculo_integral_clk(j,k1,k2, res)
+  real inicialx,inicialy,finalx,finaly
+  real j,k1,k2, res
+  A=((2**(-j))*k1)        ! A e B sao intervalos da primeira integracao em x
+  B=(2**(-j))*(k1+1) 
+
+  C=((2**(-j))*k2)       ! C e D sao intervalos da segunda integracao em y
+  D=(2**(-j))*(k2+1)
+
+! /// Hipotese de integral nula se A-B e C-D nao forem intersecoes 
+!     com o intervalo de representacao x E [0,2] e y E [0,2]
+
+  ! Teste para a primeira integral em x
+  if (A .lt. 0)inicialx=0.
+  if (A .ge. 0 .and. A .lt. 2)inicialx=A
+  if (A .ge. 2)rescalc=1; res=0.
+
+  if (B .le. 0)rescalc=1; res=0.
+  if (B .gt. 2)finalx=2.
+  if (B .gt. 0 .and. B .le. 2)finalx=B
+
+  ! Teste para a segunda integral em y
+  if (C .lt. 0)inicialy=0.
+  if (C .ge. 0 .and. C .lt. 2)inicialy=C
+  if (C .ge. 2)rescalc=1;res=0.
+
+  if (D .le. 0)rescalc=1;res=0.
+  if (D .gt. 2)finaly=2.
+  if (D .gt. 0 .and. D .le. 2)finaly=D
+
+  ! \\\ Fim da Hipotese
+
+  if (rescalc .ne. 1) then
+     call integral(inicialx,inicialy,finalx,finaly, res)
+  endif
+
+  return
+end subroutine calculo_integral_clk
+
+subroutine calculo_phi(t,j,k, phi) ! SUBROTINA OK =D
+  real j,k,phi,t
+  A=((2**(-j))*k)
+  C=(2**(-j))*(k+1) 
+  D=2**(j*0.5)
+  phi=0.0
+  if (t .ge. a .and. t .le. C) phi=D
+  return
+end subroutine calculo_phi
+!
+! ========================== SUBROTINAS MAE (PSI) ===============================
+!
+subroutine calculo_mae(sinal,x,y,j,k1,k2, fcMae)
+  real j,x,y,k1,k2, djk, psi_Mi
+  integer sinal
+  external f
+  call calculo_psiMi(sinal,x,y,j,k1,k2, psi_Mi)              !psiMi OK horizontal
+
+  if (psi_Mi .ne. 0) then 
+     call calculo_integral_djk(sinal,j,k1,k2, psi_Mi, djk)   ! horizontal ok
+  else
+     djk=0.
+  endif
+  fcMae=djk*psi_Mi
+  return
+end subroutine calculo_mae
+!
+subroutine calculo_psiMi(sinal,x,y,j,k1,k2, psi_Mi )
+  integer sinal
+  real x,y,j,k1,k2,psi_Mi
+  select case (sinal)
+  case (1)
+     !Psi Horizontal
+     call calculo_phi(x,j,k1,phiX)
+     call calculo_psi(y,j,k2,psiY)
+     psi_Mi=phiX*psiY
+  case (2)
+     !Psi Vertical
+     call calculo_psi(x,j,k1,psiX)  
+     call calculo_phi(y,j,k2,phiY)
+     psi_Mi=psiX*phiY
+!     if((j .eq. 1) .and. (k1 .eq. 1) .and. (k2 .eq. 1)) then
+!         write(*,*)j, k1, k2, psi_Mi, psiX, phiY
+!     endif
+  case (3)
+     !Psi Diagonal
+     call calculo_psi(x,j,k1,psiX)
+     call calculo_psi(y,j,k2,psiY)
+     psi_Mi=psiX*psiY
+  end select
+  return
+end subroutine calculo_psiMi
+!
+subroutine calculo_psi(t,j,k, psi) ! SUBROTINA OK =D
+  real j,k
+  A=((2**(-j))*k)
+  B=(2**(-j))*(k+0.5) 
+  C=(2**(-j))*(k+1) 
+  D=2**(j*0.5)
+  psi=0.0
+  if (t .ge. a .and. t .lt. b) psi=d
+  if (t .ge. b .and. t .lt. c) psi=-d
+  return
+end subroutine calculo_psi
+!
+
+subroutine calculo_integral_djk(sinal,j,k1,k2, psi_Mi, res)
+  integer sinal
+  real inicialx,finalx, inicialy,finaly, lim_psi1_3, lim_psi2_1, lim_psi2_2, lim_psi2_3
+  real j,k1,k2, lim_psi_1, lim_psi_2, lim_psi_3, lim_phi_1, lim_phi_2, lim_psi1_1, lim_psi1_2
+  res=0.;res1=0.; res2=0.; res3=0.;res4=0.
+  rescalc1=0;rescalc2=0
+  inicialx=0;finalx=0;inicialy=0;finaly=0
+
+  select case (sinal)
+  case (1)
+     lim_phi_1=((2**(-j))*k1)
+     lim_phi_2=(2**(-j))*(k1+1)
+
+     lim_psi_1=((2**(-j))*k2)
+     lim_psi_2=(2**(-j))*(k2+0.5)
+     lim_psi_3=(2**(-j))*(k2+1)
+
+     ! *** Calculo da primeira integral com psi de 2^(-j)k a 2^(-j)(k+1/2) e phi 2^(-j)k a 2^(-j)(k+1) ***
+     ! ||| Limites da integral phi em relacao a x |||
+     if (lim_phi_1 .lt. 0)inicialx=0.
+     if (lim_phi_1 .ge. 0 .and. lim_phi_1 .lt. 2)inicialx=lim_phi_1
+     if (lim_phi_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_phi_2 .le. 0)rescalc1=1;res1=0.
+     if (lim_phi_2 .gt. 2)finalx=2.
+     if (lim_phi_2 .gt. 0 .and. lim_phi_2 .le. 2)finalx=lim_phi_2
+
+     ! ||| Limites da integral psi em relacao a y |||
+     if (lim_psi_1 .lt. 0)inicialy=0.
+     if (lim_psi_1 .ge. 0 .and. lim_psi_1 .lt. 2)inicialy=lim_psi_1
+     if (lim_psi_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_psi_2 .lt. 0.)rescalc1=1;res1=0.
+     if (lim_psi_2 .gt. 2)finaly=2.
+     if (lim_psi_2 .ge. 0 .and. lim_psi_2 .le. 2)finaly=lim_psi_2
+
+     if (rescalc1 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res1)
+     endif
+
+     ! *** Para a segunda integral com psi de 2^(-j)(k+1/2) a 2^(-j)(k+1) e phi 2^(-j)k a 2^(-j)(k+1) ***
+     inicialy=finaly
+
+     if (lim_psi_3 .le. 0) rescalc2=1;res=0.
+     if (lim_psi_3 .gt. 2) finaly=2.
+     if (lim_psi_3 .gt. 0 .and. lim_psi_3 .le. 2) finaly=lim_psi_3
+
+     if (rescalc2 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+         call integral(inicialx,inicialy,finalx,finaly, res2)
+     endif
+     res=psi_Mi*(res1+res2)
+
+  case (2)
+     lim_phi_1=((2**(-j))*k2)
+     lim_phi_2=(2**(-j))*(k2+1)
+
+     lim_psi_1=((2**(-j))*k1)
+     lim_psi_2=(2**(-j))*(k1+0.5)
+     lim_psi_3=(2**(-j))*(k1+1)
+
+     ! *** Calculo da primeira integral com psi de 2^(-j)k a 2^(-j)(k+1/2) e phi 2^(-j)k a 2^(-j)(k+1) ***
+     ! NOTA: A ordem da integracao se inverte
+     ! ||| Limites da integral phi em relacao a Y |||
+     if (lim_phi_1 .lt. 0)inicialy=0.
+     if (lim_phi_1 .ge. 0 .and. lim_phi_1 .lt. 2)inicialy=lim_phi_1
+     if (lim_phi_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_phi_2 .le. 0)rescalc1=1;res1=0.
+     if (lim_phi_2 .gt. 2)finaly=2.
+     if (lim_phi_2 .gt. 0 .and. lim_phi_2 .le. 2)finaly=lim_phi_2
+
+     ! ||| Limites da integral psi em relacao a X |||
+     if (lim_psi_1 .lt. 0)inicialx=0.
+     if (lim_psi_1 .ge. 0 .and. lim_psi_1 .lt. 2)inicialx=lim_psi_1
+     if (lim_psi_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_psi_2 .lt. 0.)rescalc1=1;res1=0.
+     if (lim_psi_2 .gt. 2)finalx=2.
+     if (lim_psi_2 .ge. 0 .and. lim_psi_2 .le. 2)finalx=lim_psi_2
+
+     if (rescalc1 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res1)
+
+     endif
+
+
+     ! *** Para a segunda integral com psi de 2^(-j)(k+1/2) a 2^(-j)(k+1) e phi 2^(-j)k a 2^(-j)(k+1) ***
+     ! NOTA: Somente os limites de psi mudam. Integracao em x.
+     inicialx=finalx
+
+     if (lim_psi_3 .le. 0)rescalc2=2;res2=0.
+     if (lim_psi_3 .gt. 2)finaly=2.
+     if (lim_psi_3 .gt. 0 .and. lim_psi_3 .le. 2)finaly=lim_psi_3
+
+     if (rescalc2 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res2)
+!        write(*,*)j,k1,k2,inicialx,finalx,inicialy,finaly,res2
+     endif
+
+     res=psi_Mi*(res1+res2)
+
+!     write(*,*)psi_Mi, res1, res2, res
+
+
+  case (3)
+     ! *** Teremos quatro integrais para as combinacoes de psi (++, --, +- e -+)
+     ! NOTA: Mudamos a nomenclatura para as duas psi, teremos agora uma psi1 com k1 e psi2 com k2
+     rescalc1=0;rescalc2=0;rescalc3=0;rescalc4=0
+     res1=0;res2=0;res3=0;res4=0
+
+     lim_psi1_1=((2**(-j))*k1)
+     lim_psi1_2=(2**(-j))*(k1+0.5)
+     lim_psi1_3=(2**(-j))*(k1+1)
+
+     lim_psi2_1=((2**(-j))*k2)
+     lim_psi2_2=(2**(-j))*(k2+0.5)
+     lim_psi2_3=(2**(-j))*(k2+1)
+
+!     write(*,*)lim_psi1_1, lim_psi1_2, lim_psi2_1, lim_psi2_2
+
+!    if((j .eq. 1) .and. (k1 .eq. 1) .and. (k2 .eq. 1)) then
+!        write(*,*)lim_psi1_1, lim_psi1_2, lim_psi2_1, lim_psi2_2
+!    endif
+
+     ! ***** Primeira integral ++ *****
+     ! k1 esta relacionado a X
+     if (lim_psi1_1 .lt. 0)inicialx=0.
+     if (lim_psi1_1 .ge. 0 .and. lim_psi1_1 .lt. 2)inicialx=lim_psi1_1
+     if (lim_psi1_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_psi1_2 .lt. 0.)rescalc1=1;res1=0.
+     if (lim_psi1_2 .gt. 2)finalx=2.
+     if (lim_psi1_2 .ge. 0 .and. lim_psi1_2 .le. 2)finalx=lim_psi1_2
+
+     ! k2 esta relacionado a Y
+     if (lim_psi2_1 .lt. 0)inicialy=0.
+     if (lim_psi2_1 .ge. 0 .and. lim_psi2_1 .lt. 2)inicialy=lim_psi2_1
+     if (lim_psi2_1 .ge. 2)rescalc1=1;res1=0.
+
+     if (lim_psi2_2 .lt. 0.)rescalc1=1;res1=0.
+     if (lim_psi2_2 .gt. 2)finaly=2.
+     if (lim_psi2_2 .ge. 0 .and. lim_psi2_2 .le. 2)finaly=lim_psi2_2
+
+     if (rescalc1 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res1)
+     endif
+
+
+
+     ! ***** Segunda integral -- *****
+     ! k1 e psi1 estao relacionados a X
+     if (lim_psi1_2 .lt. 0)inicialx=0.
+     if (lim_psi1_2 .ge. 0 .and. lim_psi1_1 .lt. 2)inicialx=lim_psi1_2
+     if (lim_psi1_2 .ge. 2)rescalc2=1;res2=0.
+
+     if (lim_psi1_3 .lt. 0.)rescalc2=1;res2=0.
+     if (lim_psi1_3 .gt. 2)finalx=2.
+     if (lim_psi1_3 .ge. 0 .and. lim_psi1_2 .le. 2)finalx=lim_psi1_3
+
+     ! k2 e psi2 estao relacionados a Y
+     if (lim_psi2_2 .lt. 0)inicialy=0.
+     if (lim_psi2_2 .ge. 0 .and. lim_psi2_1 .lt . 2)inicialy=lim_psi2_2
+     if (lim_psi2_2 .ge. 2)rescalc2=1;res2=0.
+
+     if (lim_psi2_3 .lt. 0.)rescalc2=1;res2=0.
+     if (lim_psi2_3 .gt. 2)finaly=2.
+     if (lim_psi2_3 .ge. 0 .and. lim_psi2_3 .le. 2)finaly=lim_psi2_3
+
+     if (rescalc2 .ne. 1) then
+        ! ||| Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res2)
+     endif
+
+     ! ***** Terceira integral +- *****
+     ! k1 e psi1 estao relacionados a X
+     if (lim_psi1_2 .lt. 0)inicialx=0.
+     if (lim_psi1_2 .ge. 0 .and. lim_psi1_1 .lt. 2)inicialx=lim_psi1_2
+     if (lim_psi1_2 .ge. 2)rescalc=3;res3=0.
+
+     if (lim_psi1_3 .lt. 0.)rescalc=3;res3=0.
+     if (lim_psi1_3 .gt. 2)finalx=2.
+     if (lim_psi1_3 .ge. 0 .and. lim_psi1_3 .le. 2)finalx=lim_psi1_3
+
+     ! k2 e psi2 estao relacionados a Y
+     if (lim_psi2_1 .lt. 0)inicialy=0.
+     if (lim_psi2_1 .ge. 0 .and. lim_psi2_1 .lt. 2)inicialy=lim_psi2_1
+     if (lim_psi2_1 .ge. 2)rescalc=3;res3=0.
+
+     if (lim_psi2_2 .lt. 0.)rescalc=3;res3=0.
+     if (lim_psi2_2 .gt. 2)finaly=2.
+     if (lim_psi2_2 .ge. 0 .and. lim_psi2_2 .le. 2)finaly=lim_psi2_2
+
+     if (rescalc3 .ne. 1) then
+        ! |||Calculo da integral dupla |||
+     call integral(inicialx,inicialy,finalx,finaly, res3)
+
+     endif
+
+     ! ***** Quarta integral -+ *****
+     ! k1 e psi1 estao relacionados a X
+     if (lim_psi1_1 .lt. 0)inicialx=0.
+     if (lim_psi1_1 .ge. 0 .and. lim_psi1_1 .lt. 2)inicialx=lim_psi1_1
+     if (lim_psi1_1 .ge. 2)rescalc4=1;res4=0.
+
+     if (lim_psi1_2 .lt. 0.)rescalc4=1;res4=0.
+     if (lim_psi1_2 .gt. 2)finalx=2.
+     if (lim_psi1_2 .ge. 0 .and. lim_psi1_2 .le. 2)finalx=lim_psi1_2
+
+     ! k2 e psi2 estao relacionados a Y
+     if (lim_psi2_2 .lt. 0)inicialy=0.
+     if (lim_psi2_2 .ge. 0 .and. lim_psi2_2 .lt. 2)inicialy=lim_psi2_2
+     if (lim_psi2_2 .ge. 2)rescalc4=1;res4=0.
+
+     if (lim_psi2_3 .lt. 0.)rescalc4=1;res4=0.
+     if (lim_psi2_3 .gt. 2)finaly=2.
+     if (lim_psi2_3 .ge. 0 .and. lim_psi2_3 .le. 2)finaly=lim_psi2_3
+
+     if (rescalc4 .ne. 1) then
+        ! |||Calculo da integral dupla |||
+        call integral(inicialx,inicialy,finalx,finaly, res4)
+     endif
+
+     ! **** Integral resultante ****
+     res=res1+res2+res3+res4
+!     if((j .eq. 1) .and. (k1 .eq. 1) .and. (k2 .eq. 1)) then
+!         write(*,*)psi_Mi, res1, res2, res3, res4
+!     endif
+
+
+  end select
+
+  djk=psi_Mi*res
+
+  return
+end subroutine calculo_integral_djk

@@ -1,0 +1,1 @@
+/usr/bin/c++   -g    CMakeFiles/novotrial.dir/main.o  -o novotrial -rdynamic 
