@@ -20,31 +20,32 @@ double integral( double inicialx, double finalx, double inicialy, double finaly,
 //double integral( double inicialx, double finalx, double inicialy, double finaly)
 //    {
 //    cout << "integral"<< endl;
-    double res = 0;
-    const int partes = 2;
+    double res = 0 ;
+    const int partes = 2 ;
 //    double soma = 0;
-    double x;
-    double y;
+ 
+    int x_matriz = floor(inicialx) ;
+    int y_matriz = floor(inicialy) ;
     
     double divisao_x = finalx - inicialx ;
     double divisao_y = finaly - inicialy ;
     
     double partex = divisao_x/partes ;
     double partey = divisao_y/partes ;
+
     
-    //    cout << inicialx << "  " << finalx << endl;
-    for (x = inicialx; x < finalx; x+=partex) {
-        for (y =inicialy; y < finaly; y+=partey) {
-            int x_m = floor(x);
-            int y_m = floor(y);
-            double altura = matrix[x_m][y_m];
-//            cout << altura << endl;
-//            double altura = pow(x,2)+x+y+1;
-            double cubo = partex*partey*altura;
-            //            cout << x << "  " << y << "  "<< " cubo: " <<  cubo << endl;
-            res +=cubo;
-        }
-    }
+	//    cout << inicialx << "  " << finalx << endl;
+	//if (matrix[x_m][y_m] != matrix [x_a][y_a]){
+		for (double x = inicialx; x < finalx; x+=partex) {
+			for (double y =inicialy; y < finaly; y+=partey) {
+
+				double altura = matrix[x_matriz][y_matriz];
+				//cout << x_matriz << "  " << y_matriz << "  " << altura << endl;
+				double cubo = partex*partey*altura;
+				res +=cubo;
+			}
+		}
+		//}
 //    cout << res << endl;
     return(res);
 }
@@ -66,14 +67,15 @@ int main (int argc, char **argv)
     //Variaveis de entrada
     const double inicio_x = 0 ;   //Inicio da representacao
     const double inicio_y = 0 ;
-    const double fim_x = 20 ;
-    const double fim_y = 90;
+    const double fim_x = 160 ;
+    const double fim_y = 80;
     const double dom_inf_x = 0 ;   //Inicio do dominio = escala da imagem (157x80)
     const double dom_inf_y = 0 ;
-    const double dom_sup_x = 20 ;
+    const double dom_sup_x = 10 ;
     const double dom_sup_y = 80 ;
-    const double increment = 5 ; //Incremento da representacao
-    const double l = 2 ;           // Determinacao de l - passo da varredura
+    const double incremento_x = 20 ; //Incremento da representacao
+	const double incremento_y = 10 ; //Incremento da representacao
+    const double l = 1 ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
 //    int elementos_somaFxy = (ceil((abs(inicio_x)+abs(fim_x))/increment)*ceil((abs(inicio_y)+abs(fim_y))/increment));
@@ -148,8 +150,9 @@ int main (int argc, char **argv)
 //    }
     
 //    int i = 0;
-    for(double x = inicio_x ; x <= fim_x ; x += increment){	//--Valores de x e y para tomar da matriz
-        for(double y = inicio_y ; y <= fim_y ; y += increment){
+	int count = 0;
+    for(double x = inicio_x ; x <= fim_x ; x += incremento_x){	//--Valores de x e y para tomar da matriz
+        for(double y = inicio_y ; y <= fim_y ; y += incremento_y){
 			somaFxy = 0;
             for( int k1 = min_k1; k1 <= max_k1; k1++ ) {
                 for( int k2 = min_k2; k2 <= max_k2; k2++ ) {
@@ -166,12 +169,16 @@ int main (int argc, char **argv)
 //                    int indice_k1 = k1_m - floor(inicio_x / pow(2,-l));
 //                    int indice_k2 = k2_m - floor(inicio_y / pow(2,-l));
 //                    cout << cjk << endl;
-					cout << min_k1 << " " << min_k2 << " " << max_k1 << " " << max_k2 << endl;
+					//cout << min_k1 << " " << min_k2 << " " << max_k1 << " " << max_k2 << endl;
                     double coefcjk_matrix = cjk * phi * phi ;
                     if ( (x >= a && x <=  b) && (y >= c && y <= d)) {
                         Fxy = coefcjk_matrix * phi *phi;
-                        cout << coefcjk_matrix << "  " << phi ;
+                        cout << coefcjk_matrix << "  " << phi << endl;
                     }
+					
+					cout << count << endl;
+					count++;
+					
                     somaFxy += Fxy ;
                 }
             }
