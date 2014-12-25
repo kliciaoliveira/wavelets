@@ -71,11 +71,11 @@ int main (int argc, char **argv)
     const double fim_y = 80;
     const double dom_inf_x = 0 ;   //Inicio do dominio = escala da imagem (157x80)
     const double dom_inf_y = 0 ;
-    const double dom_sup_x = 10 ;
+    const double dom_sup_x = 157 ;
     const double dom_sup_y = 80 ;
-    const double incremento_x = 20 ; //Incremento da representacao
+    const double incremento_x = 10 ; //Incremento da representacao
 	const double incremento_y = 10 ; //Incremento da representacao
-    const double l = 1 ;           // Determinacao de l - passo da varredura
+    const double l = 3 ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
 //    int elementos_somaFxy = (ceil((abs(inicio_x)+abs(fim_x))/increment)*ceil((abs(inicio_y)+abs(fim_y))/increment));
@@ -176,8 +176,8 @@ int main (int argc, char **argv)
                         cout << coefcjk_matrix << "  " << phi << endl;
                     }
 					
-					cout << count << endl;
-					count++;
+					//cout << count << endl;
+					//count++;
 					
                     somaFxy += Fxy ;
                 }
