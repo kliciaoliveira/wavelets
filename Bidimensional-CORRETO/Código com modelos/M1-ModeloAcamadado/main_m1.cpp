@@ -31,7 +31,8 @@ double integral( double inicialx, double finalx, double inicialy, double finaly,
 
 	for (double x = inicialx; x < finalx; x+=partex) {
 		for (double y =inicialy; y < finaly; y+=partey) {
-			double altura = matrix[x_matriz][y_matriz];
+			//double altura = matrix[x_matriz][y_matriz];   // Trocar altura para a funcao que sera representada
+			double altura = pow(x,2)+x+y+1;					// Matrix para modelos e funcao matematica para funcoes
 			double cubo = partex*partey*altura;
 			res +=cubo;
 		}
@@ -57,15 +58,15 @@ int main (int argc, char **argv)
     //Variaveis de entrada
     const double inicio_x = 0 ;   //Inicio da representacao
     const double inicio_y = 0 ;
-    const double fim_x = 160 ;
-    const double fim_y = 80;
+    const double fim_x = 5 ;
+    const double fim_y = 5;
     const double dom_inf_x = 0 ;   //Inicio do dominio = escala da imagem (157x80)
     const double dom_inf_y = 0 ;
-    const double dom_sup_x = 157 ;
-    const double dom_sup_y = 80 ;
-    const double incremento_x = 10 ; //Incremento da representacao
-	const double incremento_y = 10 ; //Incremento da representacao
-    const double l = 3 ;           // Determinacao de l - passo da varredura
+    const double dom_sup_x = 6 ;
+    const double dom_sup_y = 6 ;
+    const double incremento_x = 1 ; //Incremento da representacao
+	const double incremento_y = 1 ; //Incremento da representacao
+    const double l = 4 ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
 //    int elementos_somaFxy = (ceil((abs(inicio_x)+abs(fim_x))/increment)*ceil((abs(inicio_y)+abs(fim_y))/increment));
@@ -92,7 +93,7 @@ int main (int argc, char **argv)
     vector<vector<double> > matrix;
     
     /* tenta abrir o arquivo e avisa em caso de erro. */
-    ifstream fin("generic2.dat");
+    ifstream fin("generic_zeroed.dat");
     if (!fin.is_open()) {
         cout << "Erro, arquivo não encontrado ou sem permissao de leitura.";
         return 0;
@@ -139,7 +140,6 @@ int main (int argc, char **argv)
 //        coefcjk[i] = new double[elementos_cjk+1];
 //    }
     
-	int count = 0;
     for(double x = inicio_x ; x <= fim_x ; x += incremento_x){	//--Valores de x e y para tomar da matriz
         for(double y = inicio_y ; y <= fim_y ; y += incremento_y){
 			somaFxy = 0;
@@ -153,14 +153,14 @@ int main (int argc, char **argv)
                     double cjk = integral( a , b , c , d , matrix) ;     //Calculo da integral
                     Fxy = 0;
                     double coefcjk_matrix = cjk * phi * phi ;
+					cout << cjk << endl;
                     if ( (x >= a && x <=  b) && (y >= c && y <= d)) {
                         Fxy = coefcjk_matrix * phi *phi;
-                        cout << coefcjk_matrix << "  " << phi << endl;
+                        //cout << coefcjk_matrix << "  " << phi << endl;
                     }
                     somaFxy += Fxy ;
                 }
             }
-
             double diff = 0;
 			/*
             DIFF
@@ -170,6 +170,7 @@ int main (int argc, char **argv)
 			*/
             myfile2 << x << "        " << y << "        " <<  diff << endl;
             myfile << x << "        " << y << "        " << somaFxy << endl;
+            cout << x << "        " << y << "        " << somaFxy << endl;
         }
     }
     myfile.close();
