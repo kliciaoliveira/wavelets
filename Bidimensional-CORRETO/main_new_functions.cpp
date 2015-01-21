@@ -116,7 +116,7 @@ int main (int argc, char **argv)
         }
     }
 	cout << "O numero de coeficientes cjk para esta representacao eh " << count_cjk << endl;
-	cout << "l = " << l << "e o incremento eh " << increment << endl;
+	cout << "l = " << l << " e o incremento usado eh de  " << increment << endl;
     myfile.close();
     myfile2.close();
     return 0;
