@@ -2,7 +2,6 @@
  com o modelo acamadado
 */
 
-
 #include <iostream>
 #include <cmath>
 #include <fstream>
