@@ -6,9 +6,9 @@
 #include <fstream>
 using namespace std;
 
-//Funcoes
+/*           :::::::::: Funcoes ::::::::::             */
 
-/* :::   Funcao a ser representada   ::: */
+/* :  Funcao a ser representada   : */
 double funcao (double x, double y)
 {
 	double res;
@@ -16,7 +16,7 @@ double funcao (double x, double y)
 	return res;
 }
 
-/* :::   Funcao de calculo da integral numerica   ::: */
+/* :   Funcao de calculo da integral numerica   : */
 double integral( double inicialx, double finalx, double inicialy, double finaly )
 {
     double res = 0;
@@ -43,6 +43,7 @@ double integral( double inicialx, double finalx, double inicialy, double finaly 
     return(res);
 }
 
+/* :   Funcao de calculo do somatorio djk   : */
 double calculos_djk (double j, int k1, int k2)
 {
     cout << j << "  "  << k1 << "  "  << k2 << endl;
@@ -88,7 +89,8 @@ double calculos_djk (double j, int k1, int k2)
 }
 
 
-//Programa
+/*           :::::::::: Programa ::::::::::             */
+
 int main (int argc, char **argv)
 {
     ofstream myfile;
@@ -166,13 +168,14 @@ int main (int argc, char **argv)
             if ((x > dom_inf_x && x < dom_sup_x) && (y > dom_inf_y && y < dom_sup_y)) {
                 diff = (funcao(x,y) - somaFxy [i] );
             }
+			/* Escrita do resultado e diferenca nos arquivos .dat*/
             myfile2 << x << "        " << y << "        " <<  diff << endl;
             myfile << x << "        " << y << "        " << somaFxy [i] + somaDjk[i] << endl;
-            //cout << somaDjk [i] << endl;
             i++;
         }
     }
     myfile.close();
     myfile2.close();
+	myfile3.close();
     return 0;
 }
