@@ -46,7 +46,6 @@ double integral( double inicialx, double finalx, double inicialy, double finaly 
 /* :   Funcao de calculo do somatorio djk   : */
 double calculos_djk (double j, int k1, int k2)
 {
-    cout << j << "  "  << k1 << "  "  << k2 << endl;
     double res2;
     /* ::   Gerando a matriz   :: 
 	Os valores i, m e f equivalem aos limites iniciais, medios e finais dos dominios. Indices 1 sao atrelados a k1 e 
@@ -113,7 +112,13 @@ int main (int argc, char **argv)
     const double increment = 0.1 ; /* Incremento da representacao */
     const double l = 4 ;           /* Determinacao de l - passo da varredura */
     const double j_max = 9;
-    
+	
+	/* Mensagem de erro para j menor que l*/
+	if( j_max < l)
+	{
+		cout << "ERRO: J eh menor que L. Ajuste os valores." << endl;
+		exit(0);
+	}
     
     /* Variaveis auxiliares de entrada */
     int elementos_somaFxy = ceil((abs(inicio_x)+abs(fim_x))/increment);
