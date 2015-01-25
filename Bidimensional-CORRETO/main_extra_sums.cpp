@@ -43,7 +43,7 @@ double integral( double inicialx, double finalx, double inicialy, double finaly 
     return(res);
 }
 
-/* :   Funcao de calculo do somatorio djk   : */
+/* :::   Funcao de calculo do somatorio djk   ::: */
 double calculos_djk (double j, int k1, int k2)
 {
     double res2;
@@ -59,12 +59,12 @@ double calculos_djk (double j, int k1, int k2)
     double m2 = pow(2,-j)* ( k2 + 0.5 ) ;
     
     /* o valor da altura das funcoes caixa e 1/-1 */
-    double wavelet_value = pow(2,(j*0.5));
+    double wavelet_value = pow( 2,( j*0.5 ) );
     
     /* :: Integral horizontal = integral * phi (j,k1) * psi (j,k2) :: */
     double h1 = integral( i1 , f1 , i2 , m2 ) ;     /* Calculo da integral x no dominio phi e y no dominio psi */
     double h2 = integral( i1 , f1 , m2 , f2 ) ;     /* dominio x eh o mesmo, soh mudo y porque psi muda de sinal */
-    double horizontal = wavelet_value * ((h1 * wavelet_value) + (h2 * (-wavelet_value)));
+    double horizontal =  wavelet_value *  ( h1  - h2 ) ; /* psi muda de sinal ao longo do domínio*/
     
     /* :: Integral diagonal = integral * psi (j,k1) * psi (j,k2) :: */
     double d1 = integral( f1 , m1 , f2 , m2 ) ;
@@ -72,23 +72,26 @@ double calculos_djk (double j, int k1, int k2)
     double d3 = integral( m1 , f1 , i2 , m2 ) ;
     double d4 = integral( i1 , m1 , m2 , f2 ) ;
     
-    double diagonal = wavelet_value * (d1 * wavelet_value + d2 * wavelet_value + d3 * wavelet_value + d4 * wavelet_value) ;
+    double diagonal = wavelet_value *  ( d1 + d2 - d3  - d4 ) ;
     
 	/* :: Integral vertical = integral * psi (j,k1) * phi (j,k2) ::*/
 	double v1 = integral( i1 , m1 , i2 , f2 );
 	double v2 = integral( m2 , f2 , i2 , f2 );
 	
-    double vertical = wavelet_value * (v1 * wavelet_value + v2 * wavelet_value);
+    double vertical = wavelet_value *  (v1 - v2);
 
-    //cout << wavelet_value << endl;
+    //cout << h1 << " " << h2 << endl;
     
-    res2 = horizontal+vertical+diagonal;
+    res2 = ( horizontal + vertical + diagonal );
+	
+	//cout << wavelet_value << "  " << res2 << "  "<< endl;
+	
     
     return(res2);
 }
 
 
-/*           :::::::::: Programa ::::::::::             */
+/*    :::::::::: Programa ::::::::::    */
 
 int main (int argc, char **argv)
 {
@@ -110,8 +113,8 @@ int main (int argc, char **argv)
     const double dom_sup_x = 2 ;
     const double dom_sup_y = 2 ;
     const double increment = 0.1 ; /* Incremento da representacao */
-    const double l = 4 ;           /* Determinacao de l - passo da varredura */
-    const double j_max = 9;
+    const double l = 1 ;           /* Determinacao de l - passo da varredura */
+    const double j_max = 3;
 	
 	/* Mensagem de erro para j menor que l*/
 	if( j_max < l)
@@ -159,13 +162,16 @@ int main (int argc, char **argv)
                 }
             }
             /* :: introdução do somatorio djk :: */
-            for (double j=l; j<=j_max; j++) {
+            for( double j=l; j<=j_max; j++) {
                 for( int k1 = min_k1; k1 <= max_k1; k1++ ) {
                     for( int k2 = min_k2; k2 <= max_k2; k2++ ) {
                         double djk_soma = calculos_djk(j, k1, k2);
-                        somaDjk [i] += djk_soma;
+						double phi = pow(2,(j*0.5));
+                        somaDjk [i] += ( djk_soma );
+						//somaDjk [i] += (  djk_soma );
                         // cout << djk_soma << "  " << i << endl;
                     }
+					
                 }
             }
 			/* Calculo da diferenca entre o modelo gerado e o ideal */

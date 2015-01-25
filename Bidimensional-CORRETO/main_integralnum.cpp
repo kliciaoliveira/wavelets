@@ -55,7 +55,7 @@ int main (int argc, char **argv)
     const double dom_sup_x = 2 ;
     const double dom_sup_y = 2 ;
     const double increment = 0.1 ; //Incremento da representacao
-    const double l = 4 ;           // Determinacao de l - passo da varredura
+    const double l = 1 ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
     int elementos_somaFxy = ceil((abs(inicio_x)+abs(fim_x))/increment);
@@ -63,6 +63,7 @@ int main (int argc, char **argv)
     //Variaveis de saida
     double Fxy = 0;
     double somaFxy [(elementos_somaFxy +1)*(elementos_somaFxy+1)];
+	int cont = 0;
     
     int min_k1 = dom_inf_x * pow(2,l) ;     // Determinacao dos limites do dominio em relacao a k1 e k2
     int min_k2 = dom_inf_y * pow(2,l) ;
@@ -85,6 +86,7 @@ int main (int argc, char **argv)
                     double cjk = integral( a , b , c , d ) ;     //Calculo da integral
                     int k1_m = floor(x / pow(2,-l)) ;        //VERFIFICAR !! x corresponde a qual par k1 k2 (quadrante)
                     int k2_m = floor(y / pow(2,-l)) ;
+					cont++;
                     Fxy = 0;
                     coefcjk [k1_m][k2_m] = cjk * phi * phi ;
                     if ( (x >= a && x <=  b) && (y >= c && y <= d) ){
@@ -95,6 +97,7 @@ int main (int argc, char **argv)
             }
             //cout << "  " << x << "  " << y << "     " << i << "   " << somaFxy [i] << endl;
             double diff = 0;
+			
             if ((x > dom_inf_x && x < dom_sup_x) && (y > dom_inf_y && y < dom_sup_y)) {
                 diff = ((x*x + x + y + 1) - somaFxy [i] );
             }
@@ -104,6 +107,7 @@ int main (int argc, char **argv)
             i++;
         }
     }
+	cout << cont << endl;
     myfile.close();
     myfile2.close();
     return 0;
