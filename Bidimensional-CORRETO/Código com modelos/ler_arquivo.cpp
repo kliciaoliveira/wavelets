@@ -21,7 +21,7 @@ int main() {
     vector<vector<double> > matrix;
     
     /* tenta abrir o arquivo e avisa em caso de erro. */
-    ifstream fin("generic2.dat");
+    ifstream fin("generic33.txt");
     if (!fin.is_open()) {
         cout << "Erro, arquivo não encontrado ou sem permissao de leitura.";
         return 0;

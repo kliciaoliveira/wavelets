@@ -12,7 +12,7 @@ using namespace std;
 double funcao (double x, double y)
 {
 	double res;
-	res = x * x + x + y + 1;
+	res = exp ((-( (x-3) * (x-3) ) / 2) + (((y-3) * (y-3) ) / 2) ) ;
 	return res;
 }
 
@@ -113,8 +113,8 @@ int main (int argc, char **argv)
     const double dom_sup_x = 2 ;
     const double dom_sup_y = 2 ;
     const double increment = 0.1 ; /* Incremento da representacao */
-    const double l = 1 ;           /* Determinacao de l - passo da varredura */
-    const double j_max = 3;
+    const double l = 3 ;           /* Determinacao de l - passo da varredura */
+    const double j_max = 4;
 	
 	/* Mensagem de erro para j menor que l*/
 	if( j_max < l)

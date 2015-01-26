@@ -6,12 +6,21 @@
 #include <fstream>
 using namespace std;
 
-//Funcoes
+/*           :::::::::: Funcoes ::::::::::             */
+
+/* :  Funcao a ser representada   : */
+double funcao (double x, double y)
+{
+	double res;
+	res = exp ((-( (x-1) * (x-1) ) / 2) + (((y-1) * (y-1 ) ) / 2) ) ;
+	return res;
+}
+
+/* :   Funcao de calculo da integral numerica   : */
 double integral( double inicialx, double finalx, double inicialy, double finaly )
 {
     double res = 0;
     const int partes = 16;
-    double soma = 0;
     double x;
     double y;
     
@@ -24,7 +33,7 @@ double integral( double inicialx, double finalx, double inicialy, double finaly 
     //    cout << inicialx << "  " << finalx << endl;
     for (x = inicialx; x <= finalx; x+=partex) {
         for (y =inicialy; y <= finaly; y+=partey) {
-            double altura = pow(x,2) + x + y + 1;
+            double altura = funcao(x,y);
             double cubo = partex*partey*altura;
             //            cout << x << "  " << y << "  "<< " cubo: " <<  cubo << endl;
             res +=cubo;
@@ -50,12 +59,12 @@ int main (int argc, char **argv)
     const double inicio_y = -1 ;
     const double fim_x = 3 ;
     const double fim_y = 3;
-    const double dom_inf_x = 0 ;   //Inicio do dominio
-    const double dom_inf_y = 0 ;
-    const double dom_sup_x = 2 ;
-    const double dom_sup_y = 2 ;
+    const double dom_inf_x = -1 ;   //Inicio do dominio
+    const double dom_inf_y = -1 ;
+    const double dom_sup_x = 3 ;
+    const double dom_sup_y = 3 ;
     const double increment = 0.1 ; //Incremento da representacao
-    const double l = 1 ;           // Determinacao de l - passo da varredura
+    const double l = 4  ;           // Determinacao de l - passo da varredura
     
     //Variaveis auxiliares de entrada
     int elementos_somaFxy = ceil((abs(inicio_x)+abs(fim_x))/increment);
@@ -99,11 +108,10 @@ int main (int argc, char **argv)
             double diff = 0;
 			
             if ((x > dom_inf_x && x < dom_sup_x) && (y > dom_inf_y && y < dom_sup_y)) {
-                diff = ((x*x + x + y + 1) - somaFxy [i] );
+                diff = funcao(x,y) - somaFxy [i] ;
             }
             myfile2 << x << "        " << y << "        " <<  diff << endl;
             myfile << x << "        " << y << "        " << somaFxy [i] << endl;
-            //cout << "Soma e diferenca:  " <<  x << "  " << y << "  " << diff << "   " << somaFxy [i] << endl;
             i++;
         }
     }

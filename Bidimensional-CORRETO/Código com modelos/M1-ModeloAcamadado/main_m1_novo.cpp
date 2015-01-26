@@ -102,7 +102,7 @@ int main (int argc, char **argv)
     vector<vector<double> > matrix;
     
     /* tenta abrir o arquivo e avisa em caso de erro. */
-    ifstream fin("generic33.txt");
+    ifstream fin("generic2.txt");
     if (!fin.is_open()) {
         cout << "Erro, arquivo não encontrado ou sem permissao de leitura.";
         return 0;
