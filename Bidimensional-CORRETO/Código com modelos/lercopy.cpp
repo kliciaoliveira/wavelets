@@ -16,7 +16,7 @@ using namespace std;
 int main() {
     std::vector<std::vector<double> > allData;
     
-    std::ifstream fin("generic2.dat");
+    std::ifstream fin("generic_zeroed_lessdata.txt");
     std::string line;
     while (std::getline(fin, line)) {      // for each line
         std::vector<double> lineData;           // create a new row
