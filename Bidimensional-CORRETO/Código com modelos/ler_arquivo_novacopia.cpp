@@ -42,19 +42,23 @@ int main() {
          */
         istringstream lineStream(line);
         lineStream >> x >> y >> data;
+		
+		//cout << x << "  " << y << "  " << data << endl;
         
         /* Aqui temos que montar a matriz. Como a leitura dos x e dos y não
          é sequencial ( depois de um 15, pode-se voltar a zero ) temos que
          testar se o valor já existe dentro do vetor. Entrando no if significa que
          não existe ainda essa linha, então adicionamos um vetor vazio. */
+
         if (matrix.size() <= x)
             matrix.push_back( std::vector<double>());
         
         // Aqui adicionamos um valor novo dentro do vetor descrito por matrix[i], que virá a ser o matrix[i][j];
         matrix[x].push_back(data);
     }
-    
+	
+    /* O programa lê x e y como entradas na matriz */
     std::cout << "row 0 contains " << matrix[0].size() << " columns\n";
     std::cout << "matrix contains " << matrix.size() << " rows\n";
-    std::cout << "row 13, column 1 is " << matrix[13][2] << '\n';
+    std::cout << "row 13, column 1 is " << matrix[13][3] << '\n';
 }

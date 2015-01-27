@@ -29,5 +29,5 @@ int main() {
     }
     
     std::cout << "row 0 contains " << allData[0].size() << " columns\n";
-    std::cout << "row 13, column 1 is " << allData[13][1] << '\n';
+    std::cout << "row 13, column 1 is " << allData[13][3] << '\n';
 }
