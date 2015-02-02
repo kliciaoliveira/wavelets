@@ -12,7 +12,8 @@ using namespace std;
 double funcao (double x, double y)
 {
 	double res;
-	res = exp ((-( (x-3) * (x-3) ) / 2) + (((y-3) * (y-3) ) / 2) ) ;
+	//res = exp ((-( (x-3) * (x-3) ) / 2) + (((y-3) * (y-3) ) / 2) ) ;
+	res = pow(x,2)+x+y+1;
 	return res;
 }
 
@@ -58,13 +59,13 @@ double calculos_djk (double j, int k1, int k2)
     double m1 = pow(2,-j)* ( k1 + 0.5 ) ;
     double m2 = pow(2,-j)* ( k2 + 0.5 ) ;
     
-    /* o valor da altura das funcoes caixa e 1/-1 */
+
     double wavelet_value = pow( 2,( j*0.5 ) );
     
     /* :: Integral horizontal = integral * phi (j,k1) * psi (j,k2) :: */
     double h1 = integral( i1 , f1 , i2 , m2 ) ;     /* Calculo da integral x no dominio phi e y no dominio psi */
     double h2 = integral( i1 , f1 , m2 , f2 ) ;     /* dominio x eh o mesmo, soh mudo y porque psi muda de sinal */
-    double horizontal =  wavelet_value *  ( h1  - h2 ) ; /* psi muda de sinal ao longo do domínio*/
+    double horizontal =  ( h1  - h2 ) ; /* psi muda de sinal ao longo do domínio*/
     
     /* :: Integral diagonal = integral * psi (j,k1) * psi (j,k2) :: */
     double d1 = integral( f1 , m1 , f2 , m2 ) ;
@@ -72,13 +73,13 @@ double calculos_djk (double j, int k1, int k2)
     double d3 = integral( m1 , f1 , i2 , m2 ) ;
     double d4 = integral( i1 , m1 , m2 , f2 ) ;
     
-    double diagonal = wavelet_value *  ( d1 + d2 - d3  - d4 ) ;
+    double diagonal = ( d1 + d2 - d3  - d4 ) ;
     
 	/* :: Integral vertical = integral * psi (j,k1) * phi (j,k2) ::*/
 	double v1 = integral( i1 , m1 , i2 , f2 );
 	double v2 = integral( m2 , f2 , i2 , f2 );
 	
-    double vertical = wavelet_value *  (v1 - v2);
+    double vertical = (v1 - v2);
 
     //cout << h1 << " " << h2 << endl;
     
@@ -113,7 +114,7 @@ int main (int argc, char **argv)
     const double dom_sup_x = 2 ;
     const double dom_sup_y = 2 ;
     const double increment = 0.1 ; /* Incremento da representacao */
-    const double l = 3 ;           /* Determinacao de l - passo da varredura */
+    const double l = 4 ;           /* Determinacao de l - passo da varredura */
     const double j_max = 4;
 	
 	/* Mensagem de erro para j menor que l*/
@@ -137,6 +138,7 @@ int main (int argc, char **argv)
     int max_k2 = (dom_sup_y - pow(2,-l))/ pow(2,-l) ;
     int elementos_cjk = max_k1 + 1;
     double coefcjk [elementos_cjk] [elementos_cjk] ;
+
     
     int i = 0;
     for(double x = inicio_x ; x <= fim_x ; x += increment){	/* --Valores de x e y para tomar da matriz */
@@ -163,12 +165,14 @@ int main (int argc, char **argv)
             }
             /* :: introdução do somatorio djk :: */
             for( double j=l; j<=j_max; j++) {
+				/* o valor da altura das funcoes caixa e 1/-1 */
+				double phi = pow(2,(j*0.5));
                 for( int k1 = min_k1; k1 <= max_k1; k1++ ) {
                     for( int k2 = min_k2; k2 <= max_k2; k2++ ) {
                         double djk_soma = calculos_djk(j, k1, k2);
-						double phi = pow(2,(j*0.5));
-                        somaDjk [i] += ( djk_soma );
-						//somaDjk [i] += (  djk_soma );
+                        somaDjk [i] += 3 * pow(phi,2) * ( djk_soma );
+						cout << phi << endl;
+						//somaDjk [i] += ( djk_soma );
                         // cout << djk_soma << "  " << i << endl;
                     }
 					
