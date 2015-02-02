@@ -35,8 +35,8 @@ double integral( double inicialx, double finalx, double inicialy, double finaly,
 			int y_matriz = floor(y);
 			
 			/* altura é a função a ser representada. Comentar as linhas seguintes de acordo com a representação */
-			double altura = matrix[x_matriz][y_matriz];
-			//double altura = pow(x,2)+x+y+1;					// Matrix para modelos e funcao matematica para funcoes
+			//double altura = matrix[x_matriz][y_matriz];
+			double altura = pow(x,2)+x+y+1;					// Matrix para modelos e funcao matematica para funcoes
 			
 			/* A integral numérica é a soma da região cubada */
 			double cubo = partex*partey*altura;
@@ -64,11 +64,11 @@ int main (int argc, char **argv)
     const double inicio_x = 0 ;   //Inicio da representacao
     const double inicio_y = 0 ;
     const double fim_x = 157 ;
-    const double fim_y = 40;
+    const double fim_y = 9;
     const double dom_inf_x = 0 ;   //Inicio do dominio = escala da imagem (157x80)
     const double dom_inf_y = 0 ;
     const double dom_sup_x = 157 ;
-    const double dom_sup_y = 40 ;
+    const double dom_sup_y = 9 ;
     const double incremento_x = 1 ; //Incremento da representacao
 	const double incremento_y = 1 ; //Incremento da representacao
     const double l = 3 ;           // Determinacao de l - passo da varredura
@@ -98,7 +98,7 @@ int main (int argc, char **argv)
    vector<vector<double> > matrix;
    
    /* tenta abrir o arquivo e avisa em caso de erro. */
-   ifstream fin("generic_zeroed_lessdata.txt");
+   ifstream fin("generic_zeroed_xsort.dat");
    if (!fin.is_open()) {
        cout << "Erro, arquivo não encontrado ou sem permissao de leitura.";
        return 0;

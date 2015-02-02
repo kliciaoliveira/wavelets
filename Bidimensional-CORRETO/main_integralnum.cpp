@@ -55,14 +55,14 @@ int main (int argc, char **argv)
     
     // ---- Variaveis globais ----
     //Variaveis de entrada
-    const double inicio_x = -1 ;   //Inicio da representacao
-    const double inicio_y = -1 ;
-    const double fim_x = 3 ;
-    const double fim_y = 3;
-    const double dom_inf_x = -1 ;   //Inicio do dominio
-    const double dom_inf_y = -1 ;
-    const double dom_sup_x = 3 ;
-    const double dom_sup_y = 3 ;
+    const double inicio_x = 157 ;   //Inicio da representacao
+    const double inicio_y = 157 ;
+    const double fim_x = 9 ;
+    const double fim_y = 9;
+    const double dom_inf_x = 157 ;   //Inicio do dominio
+    const double dom_inf_y = 157 ;
+    const double dom_sup_x = 9 ;
+    const double dom_sup_y = 9 ;
     const double increment = 0.1 ; //Incremento da representacao
     const double l = 4  ;           // Determinacao de l - passo da varredura
     
