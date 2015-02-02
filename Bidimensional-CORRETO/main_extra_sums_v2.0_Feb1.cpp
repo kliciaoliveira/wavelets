@@ -129,6 +129,7 @@ int main (int argc, char **argv)
     
     /* Variaveis de saida */
     double Fxy = 0;
+	
     double somaFxy [(elementos_somaFxy +1)*(elementos_somaFxy+1)];
     double somaDjk [(elementos_somaFxy +1)*(elementos_somaFxy+1)];
     
@@ -138,8 +139,11 @@ int main (int argc, char **argv)
     int max_k2 = (dom_sup_y - pow(2,-l))/ pow(2,-l) ;
     int elementos_cjk = max_k1 + 1;
     double coefcjk [elementos_cjk] [elementos_cjk] ;
-
-    
+	
+	/* Contadores de coeficientes*/
+    int count_cjk = 0;
+	int count_djk = 0;
+	
     int i = 0;
     for(double x = inicio_x ; x <= fim_x ; x += increment){	/* --Valores de x e y para tomar da matriz */
         for(double y = inicio_y ; y <= fim_y ; y += increment){
@@ -169,10 +173,18 @@ int main (int argc, char **argv)
 				double phi = pow(2,(j*0.5));
                 for( int k1 = min_k1; k1 <= max_k1; k1++ ) {
                     for( int k2 = min_k2; k2 <= max_k2; k2++ ) {
-                        double djk_soma = calculos_djk(j, k1, k2);
-                        somaDjk [i] += 3 * pow(phi,2) * ( djk_soma );
+                        double Djk = 0;
+						
+						
+						double djk_soma = calculos_djk(j, k1, k2);
+						
+	                    if ( (x >= a && x <=  b) && (y >= c && y <= d) ){
+	                        Djk = 3 * pow(phi,2) * ( djk_soma );
+	                    }
+						
+                        //somaDjk [i] += 3 * pow(phi,2) * ( djk_soma );
 						cout << phi << endl;
-						//somaDjk [i] += ( djk_soma );
+						somaDjk [i] += Djk;
                         // cout << djk_soma << "  " << i << endl;
                     }
 					
@@ -181,7 +193,7 @@ int main (int argc, char **argv)
 			/* Calculo da diferenca entre o modelo gerado e o ideal */
             double diff = 0;
             if ((x > dom_inf_x && x < dom_sup_x) && (y > dom_inf_y && y < dom_sup_y)) {
-                diff = (funcao(x,y) - somaFxy [i] );
+                diff = (funcao(x,y) - (somaFxy [i] + somaDjk[i]) );
             }
 			/* Escrita do resultado e diferenca nos arquivos .dat*/
             myfile2 << x << "        " << y << "        " <<  diff << endl;
@@ -189,6 +201,8 @@ int main (int argc, char **argv)
             i++;
         }
     }
+	cout << "O numero de coeficientes cjk eh: "<< count_cjk << endl;
+	cout << "O numero de coeficientes djk eh: "<< count_djk << endl;
     myfile.close();
     myfile2.close();
 	myfile3.close();
